@@ -122,7 +122,7 @@ namespace XLSConverter
           bool parseOk = double.TryParse(val, out dblValue);
 
           if (parseOk)
-            finalValue = (Math.Abs(dblValue % 1) < double.Epsilon ? (int)dblValue : dblValue);
+            finalValue = Math.Abs(dblValue % 1) < double.Epsilon ? (int)dblValue : dblValue;
 
           dataSheet.Cells[address].Value = finalValue;
 
