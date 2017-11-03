@@ -1,2 +1,3 @@
-# xlsconverter
-A simple converter to convert from/to XLSX (MS Excel) files
+# MMVIC Report Generator
+* Convert generated PSV exports of database to MS Excel (.xlsx) files
+* Convert generated PSV exports of database to member directory PDF format
