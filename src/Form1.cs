@@ -1,21 +1,41 @@
-﻿using System;
+﻿// 
+// This file is part of - MMVIC Report Generator
+// Copyright 2017 Mihir Mone
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using MMVIC.Models;
 using OfficeOpenXml;
 
-namespace XLSConverter
+namespace MMVIC
 {
-  public partial class Form1 : Form
+  public partial class Form1 : Form, IObserver
   {
-    private static Guid m_folderDownloads = new Guid("374DE290-123F-4565-9164-39C4925E467B");
+    private static Guid DownloadsFolderGuid = new Guid("374DE290-123F-4565-9164-39C4925E467B");
+    private volatile int m_currentProgress;
+    private readonly DataProcessor m_dataProcessor;
 
     public Form1()
     {
       InitializeComponent();
 
-      EnableConverting(false);
+      EnableExportActions(false);
 
       txtOutputFolder.Enabled = false;
 
@@ -26,14 +46,18 @@ namespace XLSConverter
 
       progressBar1.Minimum = 0;
       progressBar1.Maximum = 100;
+
+      m_dataProcessor = new DataProcessor();
+      m_dataProcessor.RegisterObserver(this);
     }
 
     [DllImport("shell32.dll", CharSet = CharSet.Auto)]
     private static extern int SHGetKnownFolderPath(ref Guid id, int flags, IntPtr token, out IntPtr path);
 
-    private void EnableConverting(bool enable = true)
+    private void EnableExportActions(bool enable = true)
     {
-      btnConvert.Enabled = enable;
+      btnConvertToXls.Enabled = enable;
+      btnMemberDirectory.Enabled = enable;
     }
 
     private void SetProgress(int percentage)
@@ -47,7 +71,7 @@ namespace XLSConverter
       if (Environment.OSVersion.Version.Major >= 6)
       {
         IntPtr pathPtr;
-        int hr = SHGetKnownFolderPath(ref m_folderDownloads, 0, IntPtr.Zero, out pathPtr);
+        int hr = SHGetKnownFolderPath(ref DownloadsFolderGuid, 0, IntPtr.Zero, out pathPtr);
         if (hr == 0)
         {
           path = Marshal.PtrToStringUni(pathPtr);
@@ -72,37 +96,43 @@ namespace XLSConverter
       if (File.Exists(txtSingleFile.Text))
       {
         txtOutputFolder.Text = Path.GetDirectoryName(txtSingleFile.Text);
-        EnableConverting();
+        EnableExportActions();
       }
       else
-        EnableConverting(false);
+        EnableExportActions(false);
     }
 
     private void btnConvert_Click(object sender, EventArgs e)
     {
-      Thread t = new Thread(DoWork);
+      EnableExportActions(false);
+
+      Thread t = new Thread(() =>
+      {
+        string outputFileName = string.Format("{0}\\{1}.xlsx", txtOutputFolder.Text, Path.GetFileNameWithoutExtension(txtSingleFile.Text));
+        m_dataProcessor.MakeOrdersXls(txtSingleFile.Text, outputFileName);
+      });
       t.Start();
     }
 
     private void DoWork()
     {
-      int currentProgress = 5;
+      m_currentProgress = 5;
       this.RunOnUiThread(f =>
       {
-        EnableConverting(false);
-        SetProgress(currentProgress);
+        EnableExportActions(false);
+        SetProgress(m_currentProgress);
       });
 
       string[] lines = File.ReadAllLines(txtSingleFile.Text);
-      currentProgress += 10;
-      this.RunOnUiThread(f => SetProgress(currentProgress));
+      m_currentProgress += 10;
+      this.RunOnUiThread(f => SetProgress(m_currentProgress));
 
       int valA = 'A', valZ = 'Z';
 
       ExcelPackage pkg = new ExcelPackage();
       ExcelWorksheet dataSheet = pkg.Workbook.Worksheets.Add("Orders");
 
-      int progressAvailable = progressBar1.Maximum - currentProgress;
+      int progressAvailable = progressBar1.Maximum - m_currentProgress;
       int progressStepSize = (int)(1.0 / lines.Length * progressAvailable);
       for (int i = 0; i < lines.Length; i++)
       {
@@ -132,18 +162,18 @@ namespace XLSConverter
             throw new OverflowException("Can not handle more than 26 columns");
         }
 
-        currentProgress += progressStepSize;
-        this.RunOnUiThread(f => SetProgress(currentProgress));
+        m_currentProgress += progressStepSize;
+        this.RunOnUiThread(f => SetProgress(m_currentProgress));
       }
 
-      currentProgress = 100;
-      this.RunOnUiThread(f => SetProgress(currentProgress));
+      m_currentProgress = 100;
+      this.RunOnUiThread(f => SetProgress(m_currentProgress));
       pkg.SaveAs(new FileInfo(string.Format("{0}\\{1}.xlsx", txtOutputFolder.Text, Path.GetFileNameWithoutExtension(txtSingleFile.Text))));
 
       pkg.Dispose();
       MessageBox.Show("Converting succeeded");
 
-      this.RunOnUiThread(f => EnableConverting());
+      this.RunOnUiThread(f => EnableExportActions());
     }
 
     private void btnSelectOutputFolder_Click(object sender, EventArgs e)
@@ -157,5 +187,20 @@ namespace XLSConverter
 
       txtOutputFolder.Text = selectFolderDialog.SelectedPath;
     }
+
+    #region Implementation of IObserver
+
+    /// <inheritdoc />
+    public void Notify(int progress)
+    {
+      this.RunOnUiThread(f =>
+      {
+        f.SetProgress(progress);
+        if (progress == 100)
+          f.EnableExportActions();
+      });
+    }
+
+    #endregion
   }
 }

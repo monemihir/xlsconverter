@@ -4,3 +4,4 @@ obj
 packages
 *.user
 **/_ReSharper.Caches
+/src/lib/wkhtmltopdf.exe

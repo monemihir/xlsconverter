@@ -1,4 +1,4 @@
-﻿namespace XLSConverter
+﻿namespace MMVIC
 {
   partial class Form1
   {
@@ -28,17 +28,19 @@
     /// </summary>
     private void InitializeComponent()
     {
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       this.selectFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
       this.selectFileDialog = new System.Windows.Forms.OpenFileDialog();
       this.btnSelectFile = new System.Windows.Forms.Button();
       this.grpConvertFile = new System.Windows.Forms.GroupBox();
+      this.label1 = new System.Windows.Forms.Label();
       this.txtSingleFile = new System.Windows.Forms.TextBox();
       this.grpOutputFolder = new System.Windows.Forms.GroupBox();
       this.txtOutputFolder = new System.Windows.Forms.TextBox();
       this.btnSelectOutputFolder = new System.Windows.Forms.Button();
-      this.btnConvert = new System.Windows.Forms.Button();
+      this.btnConvertToXls = new System.Windows.Forms.Button();
       this.progressBar1 = new System.Windows.Forms.ProgressBar();
-      this.label1 = new System.Windows.Forms.Label();
+      this.btnMemberDirectory = new System.Windows.Forms.Button();
       this.grpConvertFile.SuspendLayout();
       this.grpOutputFolder.SuspendLayout();
       this.SuspendLayout();
@@ -64,6 +66,16 @@
       this.grpConvertFile.TabIndex = 1;
       this.grpConvertFile.TabStop = false;
       this.grpConvertFile.Text = "Convert A File";
+      // 
+      // label1
+      // 
+      this.label1.AutoSize = true;
+      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label1.Location = new System.Drawing.Point(7, 55);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(233, 13);
+      this.label1.TabIndex = 2;
+      this.label1.Text = "(Select a *.psv file by clicking the Browse button)";
       // 
       // txtSingleFile
       // 
@@ -101,42 +113,43 @@
       this.btnSelectOutputFolder.UseVisualStyleBackColor = true;
       this.btnSelectOutputFolder.Click += new System.EventHandler(this.btnSelectOutputFolder_Click);
       // 
-      // btnConvert
+      // btnConvertToXls
       // 
-      this.btnConvert.Location = new System.Drawing.Point(480, 200);
-      this.btnConvert.Name = "btnConvert";
-      this.btnConvert.Size = new System.Drawing.Size(81, 22);
-      this.btnConvert.TabIndex = 4;
-      this.btnConvert.Text = "Convert";
-      this.btnConvert.UseVisualStyleBackColor = true;
-      this.btnConvert.Click += new System.EventHandler(this.btnConvert_Click);
+      this.btnConvertToXls.Location = new System.Drawing.Point(349, 194);
+      this.btnConvertToXls.Name = "btnConvertToXls";
+      this.btnConvertToXls.Size = new System.Drawing.Size(212, 44);
+      this.btnConvertToXls.TabIndex = 4;
+      this.btnConvertToXls.Text = "Convert to XLS";
+      this.btnConvertToXls.UseVisualStyleBackColor = true;
+      this.btnConvertToXls.Click += new System.EventHandler(this.btnConvert_Click);
       // 
       // progressBar1
       // 
-      this.progressBar1.Location = new System.Drawing.Point(13, 200);
+      this.progressBar1.Location = new System.Drawing.Point(13, 259);
       this.progressBar1.Name = "progressBar1";
-      this.progressBar1.Size = new System.Drawing.Size(461, 22);
+      this.progressBar1.Size = new System.Drawing.Size(548, 22);
       this.progressBar1.TabIndex = 5;
       // 
-      // label1
+      // btnMemberDirectory
       // 
-      this.label1.AutoSize = true;
-      this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label1.Location = new System.Drawing.Point(7, 55);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(233, 13);
-      this.label1.TabIndex = 2;
-      this.label1.Text = "(Select a *.psv file by clicking the Browse button)";
+      this.btnMemberDirectory.Location = new System.Drawing.Point(13, 194);
+      this.btnMemberDirectory.Name = "btnMemberDirectory";
+      this.btnMemberDirectory.Size = new System.Drawing.Size(205, 44);
+      this.btnMemberDirectory.TabIndex = 6;
+      this.btnMemberDirectory.Text = "Create Member Directory PDF";
+      this.btnMemberDirectory.UseVisualStyleBackColor = true;
       // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(573, 240);
+      this.ClientSize = new System.Drawing.Size(573, 293);
+      this.Controls.Add(this.btnMemberDirectory);
       this.Controls.Add(this.progressBar1);
-      this.Controls.Add(this.btnConvert);
+      this.Controls.Add(this.btnConvertToXls);
       this.Controls.Add(this.grpOutputFolder);
       this.Controls.Add(this.grpConvertFile);
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "Form1";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Select File";
@@ -158,9 +171,10 @@
     private System.Windows.Forms.GroupBox grpOutputFolder;
     private System.Windows.Forms.TextBox txtOutputFolder;
     private System.Windows.Forms.Button btnSelectOutputFolder;
-    private System.Windows.Forms.Button btnConvert;
+    private System.Windows.Forms.Button btnConvertToXls;
     private System.Windows.Forms.ProgressBar progressBar1;
     private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.Button btnMemberDirectory;
   }
 }
 
