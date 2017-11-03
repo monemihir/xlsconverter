@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("XLSConverter")]
-[assembly: AssemblyDescription("A simple file converter to convert from/to XLSX (MS Excel) format files")]
+[assembly: AssemblyTitle("MMVIC Report Generator")]
+[assembly: AssemblyDescription("A report generator which converts PSV exports to required format")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("XLSConverter")]
+[assembly: AssemblyCompany("MMVIC")]
+[assembly: AssemblyProduct("MMVIC Report Generator")]
 [assembly: AssemblyCopyright("Copyright © Mihir Mone 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
