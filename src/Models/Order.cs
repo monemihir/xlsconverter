@@ -28,8 +28,8 @@ namespace MMVIC.Models
   public class Order
   {
     public int OrderId { get; set; }
-    public DateTime OrderDate { get; set; }
     public string ProgramName { get; set; }
+    public DateTime OrderDate { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string TelNo { get; set; }
@@ -70,6 +70,33 @@ namespace MMVIC.Models
       });
 
       return orders.ToArray();
+    }
+
+    /// <summary>
+    ///  Convert current row to PSV row
+    /// </summary>
+    /// <returns>PSV row</returns>
+    public string ToPsvRow()
+    {
+      string[] data = {
+        OrderId.ToString(),
+        ProgramName,
+        OrderDate.ToString(Constants.DateTimeIsoFormat),
+        FirstName,
+        LastName,
+        TelNo,
+        MobileNo,
+        Email1,
+        Email2,
+        PaymentDate.ToString(Constants.DateTimeIsoFormat),
+        Quantity.ToString(),
+        TotalAmount.ToString("f02"),
+        TicketType,
+        PaymentMode,
+        OrderStatus
+      };
+
+      return string.Join("|", data);
     }
   }
 }

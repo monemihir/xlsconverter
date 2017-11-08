@@ -49,6 +49,8 @@ namespace MMVIC
 
       m_dataProcessor = new DataProcessor();
       m_dataProcessor.RegisterObserver(this);
+
+      SampleDataGenerator.WriteSampleOrders(120);
     }
 
     [DllImport("shell32.dll", CharSet = CharSet.Auto)]
