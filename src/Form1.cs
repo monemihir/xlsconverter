@@ -15,22 +15,30 @@
 // limitations under the License.
 
 using System;
+using System.Configuration;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MMVIC.Models;
-using OfficeOpenXml;
+using System.Linq;
 
 namespace MMVIC
 {
+  /// <summary>
+  /// Main form
+  /// </summary>
   public partial class Form1 : Form, IObserver
   {
     private static Guid DownloadsFolderGuid = new Guid("374DE290-123F-4565-9164-39C4925E467B");
     private volatile int m_currentProgress;
     private readonly DataProcessor m_dataProcessor;
+    private readonly bool m_enableSampleDataWriter;
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public Form1()
     {
       InitializeComponent();
@@ -50,7 +58,12 @@ namespace MMVIC
       m_dataProcessor = new DataProcessor();
       m_dataProcessor.RegisterObserver(this);
 
-      SampleDataGenerator.WriteSampleOrders(120);
+      ConfigurationManager.RefreshSection("applicationSettings");
+
+      m_enableSampleDataWriter = MMVIC.Properties.Settings.Default.EnableSampleDataWriter;
+
+      if (!m_enableSampleDataWriter)
+        btnSampleData.Hide();
     }
 
     [DllImport("shell32.dll", CharSet = CharSet.Auto)]
@@ -65,6 +78,7 @@ namespace MMVIC
     private void SetProgress(int percentage)
     {
       progressBar1.Value = percentage;
+      txtProgress.Text = percentage + "%";
     }
 
     private string GetDownloadsPath()
@@ -116,68 +130,6 @@ namespace MMVIC
       t.Start();
     }
 
-    private void DoWork()
-    {
-      m_currentProgress = 5;
-      this.RunOnUiThread(f =>
-      {
-        EnableExportActions(false);
-        SetProgress(m_currentProgress);
-      });
-
-      string[] lines = File.ReadAllLines(txtSingleFile.Text);
-      m_currentProgress += 10;
-      this.RunOnUiThread(f => SetProgress(m_currentProgress));
-
-      int valA = 'A', valZ = 'Z';
-
-      ExcelPackage pkg = new ExcelPackage();
-      ExcelWorksheet dataSheet = pkg.Workbook.Worksheets.Add("Orders");
-
-      int progressAvailable = progressBar1.Maximum - m_currentProgress;
-      int progressStepSize = (int)(1.0 / lines.Length * progressAvailable);
-      for (int i = 0; i < lines.Length; i++)
-      {
-        int rowNum = i + 1;
-        string line = lines[i];
-        string[] buff = line.Split('|');
-
-        int colNum = valA;
-        foreach (string val in buff)
-        {
-          string address = (char)colNum + rowNum.ToString();
-
-          object finalValue = val;
-
-          // check if double
-          double dblValue;
-          bool parseOk = double.TryParse(val, out dblValue);
-
-          if (parseOk)
-            finalValue = Math.Abs(dblValue % 1) < double.Epsilon ? (int)dblValue : dblValue;
-
-          dataSheet.Cells[address].Value = finalValue;
-
-          colNum++;
-
-          if (colNum > valZ)
-            throw new OverflowException("Can not handle more than 26 columns");
-        }
-
-        m_currentProgress += progressStepSize;
-        this.RunOnUiThread(f => SetProgress(m_currentProgress));
-      }
-
-      m_currentProgress = 100;
-      this.RunOnUiThread(f => SetProgress(m_currentProgress));
-      pkg.SaveAs(new FileInfo(string.Format("{0}\\{1}.xlsx", txtOutputFolder.Text, Path.GetFileNameWithoutExtension(txtSingleFile.Text))));
-
-      pkg.Dispose();
-      MessageBox.Show("Converting succeeded");
-
-      this.RunOnUiThread(f => EnableExportActions());
-    }
-
     private void btnSelectOutputFolder_Click(object sender, EventArgs e)
     {
       if (!string.IsNullOrEmpty(txtSingleFile.Text))
@@ -204,5 +156,17 @@ namespace MMVIC
     }
 
     #endregion
+
+    /// <summary>
+    /// Writes sample orders
+    /// </summary>
+    private void btnSampleData_Click(object sender, EventArgs e)
+    {
+      SetProgress(0);
+      m_dataProcessor.WriteSampleOrders(120);
+      SetProgress(50);
+      m_dataProcessor.WriteSampleMemberships(100);
+      SetProgress(100);
+    }
   }
 }

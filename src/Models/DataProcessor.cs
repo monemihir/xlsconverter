@@ -17,8 +17,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using Faker;
 using OfficeOpenXml;
 
 namespace MMVIC.Models
@@ -87,10 +89,10 @@ namespace MMVIC.Models
 
             // check if double
             double dblValue;
-            bool parseOk = double.TryParse(val, out dblValue);
+            bool parseOk = Double.TryParse(val, out dblValue);
 
             if (parseOk)
-              finalValue = Math.Abs(dblValue % 1) < double.Epsilon ? (int)dblValue : dblValue;
+              finalValue = Math.Abs(dblValue % 1) < Double.Epsilon ? (int)dblValue : dblValue;
 
             if (val.StartsWith("+"))
               finalValue = val.Substring(1);
@@ -119,6 +121,84 @@ namespace MMVIC.Models
         MessageBox.Show(e.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
+    }
+
+    /// <summary>
+    /// Write sample orders
+    /// </summary>
+    /// <param name="numOrders">[Optional] No. of orders to write. Defaults to 50</param>
+    public void WriteSampleOrders(int numOrders = 50)
+    {
+      Random rand = new Random(DateTime.Now.Millisecond);
+
+      var orders = Enumerable.Range(1, numOrders).Select(i =>
+      {
+        DateTime dt = DateTime.Now.AddDays(-rand.Next(0, 90));
+        return new Order
+        {
+          OrderId = i,
+          OrderDate = dt,
+          ProgramName = String.Join(" ", Lorem.Words(2)),
+          FirstName = Name.First(),
+          LastName = Name.Last(),
+          TelNo = Phone.Number(),
+          MobileNo = Phone.Number(),
+          Email1 = Internet.Email(),
+          Email2 = Internet.Email(),
+          PaymentDate = dt,
+          Quantity = 2,
+          TotalAmount = 50,
+          TicketType = rand.Next() % 2 == 0 ? "Adult" : "Child",
+          PaymentMode = rand.Next() % 3 == 0 ? "Credit card" : "Bank transfer",
+          OrderStatus = rand.Next() % 3 == 0 ? "wc-complete" : "wc-processing"
+        };
+      });
+
+      const string header = "OrderId|OrderDate|ProgramName|FirstName|LastName|TelNo|MobileNo|Email1|Email2|PaymentDate|Quantity|TotalAmount|TicketType|PaymentMode|OrderStatus";
+
+      var lines = new[] { header }.Concat(orders.Select(f => f.ToPsvRow()));
+
+      File.WriteAllLines(Path.Combine(Constants.CacheDirectory, "sample-orders.psv"), lines);
+    }
+
+    /// <summary>
+    /// Write sample memberships file
+    /// </summary>
+    /// <param name="numMembers">[Optional] No. of members to write. Defaults to 50</param>
+    public void WriteSampleMemberships(int numMembers = 50)
+    {
+      Random rand = new Random(DateTime.Now.Millisecond);
+
+      var orders = Enumerable.Range(1, numMembers).Select(i =>
+      {
+        DateTime dt = DateTime.Now.AddDays(-rand.Next(0, 90));
+        return new Membership
+        {
+          OrderId = i,
+          OrderDate = dt,
+          ProgramName = String.Join(" ", Lorem.Words(2)),
+          FirstName = Name.First(),
+          LastName = Name.Last(),
+          SpouseName = Name.First(),
+          Children = Enumerable.Range(0, rand.Next(0, 3)).Select(j => Name.First()).ToArray(),
+          Address = Address.StreetAddress(),
+          Suburb = "Melbourne",
+          State = Address.UsState(),
+          PostCode = rand.Next(3000, 3800),
+          TelNo = Phone.Number(),
+          MobileNo = Phone.Number(),
+          Email1 = Internet.Email(),
+          Email2 = Internet.Email(),
+          PaymentDate = dt,
+          OrderStatus = rand.Next() % 3 == 0 ? "wc-complete" : "wc-processing"
+        };
+      });
+
+      const string header = "OrderId|ProgramName|OrderDate|LastName|FirstName|SpouseName|Children|Address|Suburb|State|PostCode|TelNo|MobileNo|Email1|Email2|PaymentMode|OrderStatus";
+
+      var lines = new[] { header }.Concat(orders.Select(f => f.ToPsvRow()));
+
+      File.WriteAllLines(Path.Combine(Constants.CacheDirectory, "sample-members.psv"), lines);
     }
   }
 }

@@ -23,48 +23,68 @@ using System.Reflection;
 namespace MMVIC.Models
 {
   /// <summary>
-  ///   Denotes an order
+  ///   Denotes a membership
   /// </summary>
-  public class Order
+  public class Membership
   {
     public int OrderId { get; set; }
     public string ProgramName { get; set; }
     public DateTime OrderDate { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    public string SpouseName { get; set; }
+    public string[] Children { get; set; }
+    public string Address { get; set; }
+    public string Suburb { get; set; }
+    public string State { get; set; }
+    public int PostCode { get; set; }
     public string TelNo { get; set; }
     public string MobileNo { get; set; }
     public string Email1 { get; set; }
     public string Email2 { get; set; }
     public DateTime PaymentDate { get; set; }
-    public int Quantity { get; set; }
-    public double TotalAmount { get; set; }
-    public string TicketType { get; set; }
-    public string PaymentMode { get; set; }
     public string OrderStatus { get; set; }
 
     /// <summary>
-    /// Process an orders PSV file
+    /// Constructor
     /// </summary>
-    /// <param name="ordersPsvFilePath">Full absolute path to orders PSV file</param>
-    /// <returns>Orders</returns>
-    public static Order[] ProcessFile(string ordersPsvFilePath)
+    public Membership()
     {
-      string[] lines = File.ReadAllLines(ordersPsvFilePath);
+      Children = new string[0];
+    }
+
+    /// <summary>
+    ///   Process a memberships PSV file
+    /// </summary>
+    /// <param name="membershipPsvFilePath">Full absolute path to membership PSV file</param>
+    /// <returns>Memberships</returns>
+    public static Membership[] ProcessFile(string membershipPsvFilePath)
+    {
+      string[] lines = File.ReadAllLines(membershipPsvFilePath);
 
       PropertyInfo[] properties = typeof(Order).GetProperties();
       string[] firstLineBuff = lines[0].Split('|');
 
-      List<Order> orders = new List<Order>();
+      List<Membership> orders = new List<Membership>();
 
       lines.Skip(1).ToList().ForEach(f =>
       {
-        Order order = new Order();
+        Membership order = new Membership();
         string[] buff = f.Split('|');
         for (int i = 0; i < buff.Length; i++)
         {
           PropertyInfo prop = properties.First(p => p.Name == firstLineBuff[i]);
-          prop.SetValue(order, Convert.ChangeType(buff[i], prop.PropertyType));
+
+          if (prop.PropertyType.IsArray)
+          {
+            var data = buff[i].Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ChangeType(x, prop.PropertyType.GetElementType())).ToArray();
+
+            prop.SetValue(order, data);
+          }
+          else
+          {
+            prop.SetValue(order, Convert.ChangeType(buff[i], prop.PropertyType));
+          }
         }
         orders.Add(order);
       });
@@ -73,26 +93,28 @@ namespace MMVIC.Models
     }
 
     /// <summary>
-    ///  Convert current object to PSV row
+    ///   Converts current object to a PSV row
     /// </summary>
-    /// <returns>PSV row</returns>
     public string ToPsvRow()
     {
-      string[] data = {
+      string[] data =
+      {
         OrderId.ToString(),
         ProgramName,
         OrderDate.ToString(Constants.DateTimeIsoFormat),
-        FirstName,
         LastName,
+        FirstName,
+        SpouseName,
+        string.Join(",", Children),
+        Address,
+        Suburb,
+        State,
+        PostCode.ToString(),
         TelNo,
         MobileNo,
         Email1,
         Email2,
         PaymentDate.ToString(Constants.DateTimeIsoFormat),
-        Quantity.ToString(),
-        TotalAmount.ToString("f02"),
-        TicketType,
-        PaymentMode,
         OrderStatus
       };
 

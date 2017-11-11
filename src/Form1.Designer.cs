@@ -41,6 +41,8 @@
       this.btnConvertToXls = new System.Windows.Forms.Button();
       this.progressBar1 = new System.Windows.Forms.ProgressBar();
       this.btnMemberDirectory = new System.Windows.Forms.Button();
+      this.txtProgress = new System.Windows.Forms.Label();
+      this.btnSampleData = new System.Windows.Forms.Button();
       this.grpConvertFile.SuspendLayout();
       this.grpOutputFolder.SuspendLayout();
       this.SuspendLayout();
@@ -65,7 +67,7 @@
       this.grpConvertFile.Size = new System.Drawing.Size(548, 77);
       this.grpConvertFile.TabIndex = 1;
       this.grpConvertFile.TabStop = false;
-      this.grpConvertFile.Text = "Convert A File";
+      this.grpConvertFile.Text = "Select file to convert";
       // 
       // label1
       // 
@@ -94,7 +96,7 @@
       this.grpOutputFolder.Size = new System.Drawing.Size(548, 69);
       this.grpOutputFolder.TabIndex = 3;
       this.grpOutputFolder.TabStop = false;
-      this.grpOutputFolder.Text = "Select Output Folder";
+      this.grpOutputFolder.Text = "Select output folder";
       // 
       // txtOutputFolder
       // 
@@ -115,9 +117,9 @@
       // 
       // btnConvertToXls
       // 
-      this.btnConvertToXls.Location = new System.Drawing.Point(349, 194);
+      this.btnConvertToXls.Location = new System.Drawing.Point(194, 194);
       this.btnConvertToXls.Name = "btnConvertToXls";
-      this.btnConvertToXls.Size = new System.Drawing.Size(212, 44);
+      this.btnConvertToXls.Size = new System.Drawing.Size(175, 44);
       this.btnConvertToXls.TabIndex = 4;
       this.btnConvertToXls.Text = "Convert to XLS";
       this.btnConvertToXls.UseVisualStyleBackColor = true;
@@ -127,23 +129,45 @@
       // 
       this.progressBar1.Location = new System.Drawing.Point(13, 259);
       this.progressBar1.Name = "progressBar1";
-      this.progressBar1.Size = new System.Drawing.Size(548, 22);
+      this.progressBar1.Size = new System.Drawing.Size(507, 22);
       this.progressBar1.TabIndex = 5;
       // 
       // btnMemberDirectory
       // 
       this.btnMemberDirectory.Location = new System.Drawing.Point(13, 194);
       this.btnMemberDirectory.Name = "btnMemberDirectory";
-      this.btnMemberDirectory.Size = new System.Drawing.Size(205, 44);
+      this.btnMemberDirectory.Size = new System.Drawing.Size(175, 44);
       this.btnMemberDirectory.TabIndex = 6;
-      this.btnMemberDirectory.Text = "Create Member Directory PDF";
+      this.btnMemberDirectory.Text = "Create member directory PDF";
       this.btnMemberDirectory.UseVisualStyleBackColor = true;
+      // 
+      // txtProgress
+      // 
+      this.txtProgress.AutoSize = true;
+      this.txtProgress.Location = new System.Drawing.Point(534, 259);
+      this.txtProgress.Name = "txtProgress";
+      this.txtProgress.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+      this.txtProgress.Size = new System.Drawing.Size(21, 17);
+      this.txtProgress.TabIndex = 7;
+      this.txtProgress.Text = "0%";
+      // 
+      // btnSampleData
+      // 
+      this.btnSampleData.Location = new System.Drawing.Point(375, 194);
+      this.btnSampleData.Name = "btnSampleData";
+      this.btnSampleData.Size = new System.Drawing.Size(175, 44);
+      this.btnSampleData.TabIndex = 8;
+      this.btnSampleData.Text = "Write sample data";
+      this.btnSampleData.UseVisualStyleBackColor = true;
+      this.btnSampleData.Click += new System.EventHandler(this.btnSampleData_Click);
       // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(573, 293);
+      this.Controls.Add(this.btnSampleData);
+      this.Controls.Add(this.txtProgress);
       this.Controls.Add(this.btnMemberDirectory);
       this.Controls.Add(this.progressBar1);
       this.Controls.Add(this.btnConvertToXls);
@@ -158,6 +182,7 @@
       this.grpOutputFolder.ResumeLayout(false);
       this.grpOutputFolder.PerformLayout();
       this.ResumeLayout(false);
+      this.PerformLayout();
 
     }
 
@@ -175,6 +200,8 @@
     private System.Windows.Forms.ProgressBar progressBar1;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Button btnMemberDirectory;
+    private System.Windows.Forms.Label txtProgress;
+    private System.Windows.Forms.Button btnSampleData;
   }
 }
 

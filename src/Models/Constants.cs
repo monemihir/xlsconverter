@@ -40,6 +40,14 @@ namespace MMVIC.Models
     /// </summary>
     public static readonly string CacheDirectory = Path.Combine(ApplicationPath, "cache");
 
+    /// <summary>
+    /// Config key used to store boolean of whether sample data writing should be enabled or not
+    /// </summary>
+    public static readonly string EnableSampleDataWriterKey = "EnableSampleDataWriter";
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
     static Constants()
     {
       if (!Directory.Exists(CacheDirectory))
