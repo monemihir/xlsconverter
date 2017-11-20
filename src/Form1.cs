@@ -19,25 +19,22 @@ using System.Configuration;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MMVIC.Models;
-using System.Linq;
+using MMVIC.Properties;
 
 namespace MMVIC
 {
   /// <summary>
-  /// Main form
+  ///   Main form
   /// </summary>
   public partial class Form1 : Form, IObserver
   {
     private static Guid DownloadsFolderGuid = new Guid("374DE290-123F-4565-9164-39C4925E467B");
-    private volatile int m_currentProgress;
     private readonly DataProcessor m_dataProcessor;
-    private readonly bool m_enableSampleDataWriter;
 
     /// <summary>
-    /// Constructor
+    ///   Constructor
     /// </summary>
     public Form1()
     {
@@ -60,9 +57,7 @@ namespace MMVIC
 
       ConfigurationManager.RefreshSection("applicationSettings");
 
-      m_enableSampleDataWriter = MMVIC.Properties.Settings.Default.EnableSampleDataWriter;
-
-      if (!m_enableSampleDataWriter)
+      if (!Settings.Default.EnableSampleDataWriter)
         btnSampleData.Hide();
     }
 
@@ -158,7 +153,7 @@ namespace MMVIC
     #endregion
 
     /// <summary>
-    /// Writes sample orders
+    ///   Writes sample orders
     /// </summary>
     private void btnSampleData_Click(object sender, EventArgs e)
     {
