@@ -26,19 +26,9 @@ namespace MMVIC.Models
   public static class Constants
   {
     /// <summary>
-    /// Application path
-    /// </summary>
-    private static readonly string ApplicationPath = Path.GetFullPath(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath + @"\..\..\");
-
-    /// <summary>
     ///   Date time ISO format
     /// </summary>
     public static readonly string DateTimeIsoFormat = "yyyy-MM-dd HH:mm:ss";
-
-    /// <summary>
-    /// Cache directory
-    /// </summary>
-    public static readonly string CacheDirectory = Path.Combine(ApplicationPath, "cache");
 
     /// <summary>
     /// Config key used to store boolean of whether sample data writing should be enabled or not
@@ -46,12 +36,29 @@ namespace MMVIC.Models
     public static readonly string EnableSampleDataWriterKey = "EnableSampleDataWriter";
 
     /// <summary>
-    /// Constructor
+    /// Constant paths
     /// </summary>
-    static Constants()
+    public static class Paths
     {
-      if (!Directory.Exists(CacheDirectory))
-        Directory.CreateDirectory(CacheDirectory);
+      private static readonly string ApplicationPath = Path.GetFullPath(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath + @"\..\..\");
+      public static readonly string CacheDirectory = Path.Combine(ApplicationPath, "cache");
+
+      public static readonly string MemberDirectoryTemplatesPath = Path.Combine(ApplicationPath, @"data\member-directory");
+      public static readonly string MemberDirectoryContentTemplatePath = Path.Combine(MemberDirectoryTemplatesPath, "content.html");
+      public static readonly string MemberDirectoryHeaderTemplatePath = Path.Combine(MemberDirectoryTemplatesPath, "header.html");
+      public static readonly string MemberDirectoryFooterTemplatePath = Path.Combine(MemberDirectoryTemplatesPath, "footer.html");
+      public static readonly string MemberDirectoryStylesCssPath = Path.Combine(MemberDirectoryTemplatesPath, "style.min.css");
+
+      public static readonly string LibDirectory = Path.Combine(ApplicationPath, "lib");
+
+      /// <summary>
+      /// Constructor
+      /// </summary>
+      static Paths()
+      {
+        if (!Directory.Exists(CacheDirectory))
+          Directory.CreateDirectory(CacheDirectory);
+      }
     }
   }
 }

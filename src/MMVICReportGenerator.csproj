@@ -69,6 +69,10 @@
       <HintPath>packages\Faker.Net.1.0.3\lib\net40\Faker.NET4.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.6.5.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>packages\HtmlAgilityPack.1.6.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -99,6 +103,7 @@
     </Compile>
     <Compile Include="Models\DataProcessor.cs" />
     <Compile Include="Models\Membership.cs" />
+    <Compile Include="Models\MembershipExtensions.cs" />
     <Compile Include="Models\ObserverPattern.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Program.cs" />
@@ -135,6 +140,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="data\member-directory\content.html" />
+    <Content Include="data\member-directory\footer.html" />
+    <Content Include="data\member-directory\header.html" />
     <Content Include="data\member-directory\style.css">
       <DependentUpon>style.less</DependentUpon>
     </Content>

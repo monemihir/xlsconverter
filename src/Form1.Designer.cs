@@ -140,6 +140,7 @@
       this.btnMemberDirectory.TabIndex = 6;
       this.btnMemberDirectory.Text = "Create member directory PDF";
       this.btnMemberDirectory.UseVisualStyleBackColor = true;
+      this.btnMemberDirectory.Click += new System.EventHandler(this.btnMemberDirectory_Click);
       // 
       // txtProgress
       // 

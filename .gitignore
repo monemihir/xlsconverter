@@ -6,3 +6,4 @@ packages
 **/_ReSharper.Caches
 /src/lib/wkhtmltopdf.exe
 **/cache
+applicationhost.config
