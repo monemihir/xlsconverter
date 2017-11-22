@@ -244,13 +244,16 @@ namespace MMVIC.Models
         }
 
         cleanUpFiles();
-        NotifyAll(100);
 
         MessageBox.Show("Export succeeded!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
       catch (Exception e)
       {
         MessageBox.Show("Export failed with error: " + e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+      finally
+      {
+        NotifyAll(100);
       }
     }
 

@@ -32,6 +32,8 @@ namespace MMVIC
     private static Guid DownloadsFolderGuid = new Guid("374DE290-123F-4565-9164-39C4925E467B");
     private readonly DataProcessor m_dataProcessor;
 
+    #region ctor
+
     /// <summary>
     ///   Constructor
     /// </summary>
@@ -72,14 +74,22 @@ namespace MMVIC
       m_dataProcessor.WriteSampleOrders(rand.Next(50, 400));
     }
 
-    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
-    private static extern int SHGetKnownFolderPath(ref Guid id, int flags, IntPtr token, out IntPtr path);
+    #endregion ctor
+
+    #region SetProgress
 
     private void SetProgress(int percentage)
     {
       progressBar1.Value = percentage;
       txtProgress.Text = percentage + "%";
     }
+
+    #endregion SetProgress
+
+    #region GetDownloadsPath
+
+    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+    private static extern int SHGetKnownFolderPath(ref Guid id, int flags, IntPtr token, out IntPtr path);
 
     private string GetDownloadsPath()
     {
@@ -99,6 +109,8 @@ namespace MMVIC
       path = Path.Combine(path, "Downloads");
       return path;
     }
+
+    #endregion GetDownloadsPath
 
     #region XLS Convert Tasks
 
@@ -188,6 +200,14 @@ namespace MMVIC
         return;
       }
 
+      string outputFileName = Path.GetFileNameWithoutExtension(mdInputFile.Text);
+
+      if (outputFileName.IndexOfAny(Path.GetInvalidFileNameChars()) > 0)
+      {
+        MessageBox.Show(Path.GetFileName(mdInputFile.Text) + " is an invalid file name. Please rename the file and try again", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+      }
+
       btnCreateMemberDirectory.Enabled = false;
 
       Thread t = new Thread(() =>
@@ -195,7 +215,7 @@ namespace MMVIC
         Notify(0);
         Membership[] members = Membership.ProcessFile(Path.GetFullPath(mdInputFile.Text));
         Notify(50);
-
+        
         string outputFilePath = string.Format("{0}\\{1}.pdf", mdOutputFolder.Text, Path.GetFileNameWithoutExtension(mdInputFile.Text));
         var conf = new MemberDirectoryConfig
         {
@@ -210,11 +230,11 @@ namespace MMVIC
       t.Start();
     }
 
-    #endregion MemberDirectory Tasks
-
     private void chkPageNumbers_CheckedChanged(object sender, EventArgs e)
     {
       numPageOffset.Enabled = chkPageNumbers.Checked;
     }
+
+    #endregion MemberDirectory Tasks
   }
 }

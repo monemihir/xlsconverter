@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 using WebExtras.Core;
 using WebExtras.Html;
 
@@ -54,6 +55,25 @@ namespace MMVIC.Models
     public Membership()
     {
       Children = new string[0];
+    }
+
+    public override int GetHashCode()
+    {
+      List<string> current = new List<string>(Children) { LastName, FirstName, SpouseName };
+
+      return string.Join("", current).GetHashCode();
+    }
+
+    public override bool Equals(object obj)
+    {
+      Membership casted = obj as Membership;
+      if (casted == null)
+        return false;
+
+      List<string> left = new List<string>(Children) {LastName, FirstName, SpouseName};
+      List<string> right = new List<string>(casted.Children) {casted.LastName, casted.FirstName, casted.SpouseName};
+
+      return string.Join("", left) == string.Join("", right);
     }
 
     /// <summary>
@@ -101,7 +121,7 @@ namespace MMVIC.Models
         orders.Add(order);
       });
 
-      return orders.ToArray();
+      return orders.Distinct(new MembershipComparer()).ToArray();
     }
 
     /// <summary>
@@ -183,5 +203,33 @@ namespace MMVIC.Models
 
       return div;
     }
+  }
+
+  public class MembershipComparer : IEqualityComparer<Membership>
+  {
+    #region Implementation of IEqualityComparer<in Membership>
+
+    /// <summary>Determines whether the specified objects are equal.</summary>
+    /// <returns>true if the specified objects are equal; otherwise, false.</returns>
+    /// <param name="x">The first object of type <paramref name="T" /> to compare.</param>
+    /// <param name="y">The second object of type <paramref name="T" /> to compare.</param>
+    public bool Equals(Membership x, Membership y)
+    {
+      if (x == null || y == null)
+        return false;
+
+      return x.Equals(y);
+    }
+
+    /// <summary>Returns a hash code for the specified object.</summary>
+    /// <returns>A hash code for the specified object.</returns>
+    /// <param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
+    /// <exception cref="T:System.ArgumentNullException">The type of <paramref name="obj" /> is a reference type and <paramref name="obj" /> is null.</exception>
+    public int GetHashCode(Membership obj)
+    {
+      return obj.GetHashCode();
+    }
+
+    #endregion
   }
 }
