@@ -341,7 +341,6 @@
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "MMVIC Report Generator";
-      this.TopMost = true;
       this.grpConvertFile.ResumeLayout(false);
       this.grpConvertFile.PerformLayout();
       this.grpOutputFolder.ResumeLayout(false);

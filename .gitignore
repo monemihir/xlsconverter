@@ -7,3 +7,4 @@ packages
 /src/lib/wkhtmltopdf.exe
 **/cache
 applicationhost.config
+Output
