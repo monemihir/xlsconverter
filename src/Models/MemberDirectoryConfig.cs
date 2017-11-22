@@ -14,22 +14,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Windows.Forms;
-
-namespace MMVIC
+namespace MMVIC.Models
 {
-  internal static class Program
+  /// <summary>
+  ///   Member directory generation config
+  /// </summary>
+  public class MemberDirectoryConfig
   {
-    /// <summary>
-    ///   The main entry point for the application.
-    /// </summary>
-    [STAThread]
-    private static void Main()
-    {
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
-      Application.Run(new MainForm());
-    }
+    public string OutputFilePath { get; set; }
+    public string HeaderText { get; set; }
+    public bool EnableFooter { get; set; }
+    public int PageOffset { get; set; }
   }
 }

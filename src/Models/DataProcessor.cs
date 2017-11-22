@@ -21,11 +21,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Xml.Linq;
 using Faker;
 using HtmlAgilityPack;
 using OfficeOpenXml;
-using WebExtras.Html;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace MMVIC.Models
@@ -114,84 +112,145 @@ namespace MMVIC.Models
     ///   Makes the membership PDF document
     /// </summary>
     /// <param name="members">Members to write to document</param>
-    /// <param name="outputFilePath">PDF output file path</param>
-    public void MakeMembershipDirectory(Membership[] members, string outputFilePath)
+    /// <param name="mdConf">Member directory generation config</param>
+    public void MakeMembershipDirectory(Membership[] members, MemberDirectoryConfig mdConf)
     {
-      string pdfExeFilePath = Path.Combine(Constants.Paths.LibDirectory, "wkhtmltopdf.exe");
-      string baseDir = Constants.Paths.CacheDirectory;
-
-      string htmlFile = Path.Combine(Constants.Paths.CacheDirectory, "member-directory-content.html");
-      string footerHtmlFile = Path.Combine(Constants.Paths.CacheDirectory, "member-directory-footer.html");
-
-      // copy all CSS files to cache
-      new DirectoryInfo(Constants.Paths.MemberDirectoryTemplatesPath)
-        .GetFiles("*.css")
-        .ToList()
-        .ForEach(f => File.Copy(f.FullName, Path.Combine(baseDir, f.Name), true));
-
-      HtmlDocument doc = new HtmlDocument();
-      doc.Load(Constants.Paths.MemberDirectoryContentTemplatePath);
-
-      // update the content
-      HtmlNode contentNode = doc.DocumentNode.SelectSingleNode("//div[@id='content']");
-      contentNode.InnerHtml = members.ToHtmlTables();
-
-      doc.Save(htmlFile);
-
-      string pdfExeArgs = string.Format("--disable-smart-shrinking \"{0}\" \"{1}\"", htmlFile, outputFilePath);
-
-      // cleanup
-      Action cleanUpFiles = () =>
+      try
       {
-        File.Delete(htmlFile);
+        // we have max 50% progress available
+        const int progressAvailable = 50;
+        int progress = 0;
 
-        if (!string.IsNullOrWhiteSpace(footerHtmlFile))
-          File.Delete(footerHtmlFile);
-      };
-
-      using (Process p = new Process())
-      {
-        // start pdf process
-        p.StartInfo = new ProcessStartInfo
+        Action<int> fnNotifyProgress = val =>
         {
-          FileName = pdfExeFilePath,
-          WorkingDirectory = baseDir,
-          UseShellExecute = false,
-          Arguments = pdfExeArgs,
-          RedirectStandardInput = true,
-          RedirectStandardOutput = true,
-          RedirectStandardError = true,
-          WindowStyle = ProcessWindowStyle.Hidden,
-          CreateNoWindow = true
+          progress += val;
+          NotifyAll(progress * progressAvailable / 100);
         };
 
-        // set up a listener event to capture stderr data asynchronously as
-        // to avoid deadlock conditions when trying to read from stdout and stderr synchronously.
-        // http://msdn.microsoft.com/en-us/library/system.diagnostics.process.standarderror(v=VS.90).aspx
-        StringBuilder stdErr = new StringBuilder();
-        p.ErrorDataReceived += (sendingProcess, data) =>
+        string pdfExeFilePath = Path.Combine(Constants.Paths.LibDirectory, "wkhtmltopdf.exe");
+        List<string> pdfExeArgs = new List<string>
         {
-          if (data.Data != null) stdErr.Append(data.Data);
+          "--disable-smart-shrinking",
+          "--enable-javascript",
+          "--javascript-delay 500"
         };
 
-        // start process
-        p.Start();
+        if (mdConf.PageOffset > 0)
+          pdfExeArgs.Add("--page-offset " + mdConf.PageOffset);
 
-        // start listening for stderr text asynchronously (through the ErrorDataReceived delegate)
-        p.BeginErrorReadLine();
+        string baseDir = Constants.Paths.CacheDirectory;
+        string htmlFile = Path.Combine(Constants.Paths.CacheDirectory, "member-directory-content.html");
+        string headerHtmlFile = Path.Combine(Constants.Paths.CacheDirectory, "member-directory-header.html");
+        string footerHtmlFile = Path.Combine(Constants.Paths.CacheDirectory, "member-directory-footer.html");
 
-        // wait for process to exit
-        p.WaitForExit();
+        // copy all CSS files to cache
+        new DirectoryInfo(Constants.Paths.MemberDirectoryTemplatesPath)
+          .GetFiles("*.css")
+          .ToList()
+          .ForEach(f => File.Copy(f.FullName, Path.Combine(baseDir, f.Name), true));
+        fnNotifyProgress(20);
 
-        // check for process error
-        if (p.ExitCode != 0)
+        HtmlDocument doc = new HtmlDocument();
+
+        if (!string.IsNullOrWhiteSpace(mdConf.HeaderText))
         {
-          p.Close();
-          cleanUpFiles();
-          throw new Exception("Error converting html to pdf: " + stdErr);
+          // create page header
+          doc.Load(Constants.Paths.MemberDirectoryHeaderTemplatePath);
+          HtmlNode headerNode = doc.DocumentNode.SelectSingleNode("//header");
+          headerNode.InnerHtml = mdConf.HeaderText;
+          doc.Save(headerHtmlFile);
+          pdfExeArgs.Add("--header-line");
+          pdfExeArgs.Add("--header-html \"" + headerHtmlFile + "\"");
+          pdfExeArgs.Add("--header-spacing 5");
         }
 
-        p.Close();
+        if (mdConf.EnableFooter)
+        {
+          // create page footer
+          doc.Load(Constants.Paths.MemberDirectoryFooterTemplatePath);
+          doc.Save(footerHtmlFile);
+          pdfExeArgs.Add("--footer-line");
+          pdfExeArgs.Add("--footer-html \"" + footerHtmlFile + "\"");
+          pdfExeArgs.Add("--footer-spacing 5");
+        }
+
+        // create page content
+        doc = new HtmlDocument();
+        doc.Load(Constants.Paths.MemberDirectoryContentTemplatePath);
+        HtmlNode contentNode = doc.DocumentNode.SelectSingleNode("//div[@id='content']");
+        contentNode.InnerHtml = members.ToHtmlTables();
+        doc.Save(htmlFile);
+
+        pdfExeArgs.Add("\"" + htmlFile + "\"");
+        pdfExeArgs.Add("\"" + mdConf.OutputFilePath + "\"");
+        fnNotifyProgress(40);
+
+        //string pdfExeArgs = string.Format("--disable-smart-shrinking \"{0}\" \"{1}\"", htmlFile, outputFilePath);
+
+        // cleanup
+        Action cleanUpFiles = () =>
+        {
+          File.Delete(htmlFile);
+
+          if (!string.IsNullOrWhiteSpace(footerHtmlFile))
+            File.Delete(footerHtmlFile);
+        };
+
+        using (Process p = new Process())
+        {
+          // start pdf process
+          p.StartInfo = new ProcessStartInfo
+          {
+            FileName = pdfExeFilePath,
+            WorkingDirectory = baseDir,
+            UseShellExecute = false,
+            Arguments = string.Join(" ", pdfExeArgs),
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            WindowStyle = ProcessWindowStyle.Hidden,
+            CreateNoWindow = true
+          };
+
+          // set up a listener event to capture stderr data asynchronously as
+          // to avoid deadlock conditions when trying to read from stdout and stderr synchronously.
+          // http://msdn.microsoft.com/en-us/library/system.diagnostics.process.standarderror(v=VS.90).aspx
+          StringBuilder stdErr = new StringBuilder();
+          p.ErrorDataReceived += (sendingProcess, data) =>
+          {
+            if (data.Data != null) stdErr.Append(data.Data);
+          };
+
+          // start process
+          p.Start();
+
+          // start listening for stderr text asynchronously (through the ErrorDataReceived delegate)
+          p.BeginErrorReadLine();
+
+          // wait for process to exit
+          p.WaitForExit();
+
+          fnNotifyProgress(90);
+
+          // check for process error
+          if (p.ExitCode != 0)
+          {
+            p.Close();
+            cleanUpFiles();
+            throw new Exception("Error converting html to pdf: " + stdErr);
+          }
+
+          p.Close();
+        }
+
+        cleanUpFiles();
+        NotifyAll(100);
+
+        MessageBox.Show("Export succeeded!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      }
+      catch (Exception e)
+      {
+        MessageBox.Show("Export failed with error: " + e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 

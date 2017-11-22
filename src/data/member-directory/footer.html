@@ -1,10 +1,36 @@
-﻿<html>
+﻿<!DOCTYPE html>
+<html>
 <head>
+  <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="style.min.css" />
+
+  <script>
+    function subst() {
+      var vars = {};
+      var queryStringsFromUrl = document.location.search.substring(1).split('&');
+      for (var queryString in queryStringsFromUrl) {
+        if (queryStringsFromUrl.hasOwnProperty(queryString)) {
+          var tempVar = queryStringsFromUrl[queryString].split('=', 2);
+          vars[tempVar[0]] = decodeURI(tempVar[1]);
+        }
+      }
+      var cssSelectorClasses = ['page', 'frompage', 'topage', 'webpage', 'section', 'subsection', 'date', 'isodate', 'time', 'title', 'doctitle', 'sitepage', 'sitepages'];
+      for (var cssClass in cssSelectorClasses) {
+        if (cssSelectorClasses.hasOwnProperty(cssClass)) {
+          var element = document.getElementsByClassName(cssSelectorClasses[cssClass]);
+          for (var j = 0; j < element.length; ++j) {
+            element[j].textContent = vars[cssSelectorClasses[cssClass]];
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body>
-  <header>
-    MMVIC Member Directory
-  </header>
+<body onload="subst()">
+  <br />
+  <footer class="text-center">
+    -&nbsp;<span class="page"></span>&nbsp;-
+  </footer>
+  <br />
 </body>
 </html>

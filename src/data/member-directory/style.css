@@ -1,5 +1,6 @@
 ﻿header {
-  text-align: center;
+  padding-top: 10px;
+  font-weight: bold;
 }
 .new-page {
   page-break-before: always;
