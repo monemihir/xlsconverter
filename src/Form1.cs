@@ -49,18 +49,22 @@ namespace MMVIC
       selectFileDialog.InitialDirectory = GetDownloadsPath();
       selectFileDialog.Filter = "Pipe separated files (*.psv)|*.psv";
 
-      txtOutputFolder.Text = GetDownloadsPath();
-
       progressBar1.Minimum = 0;
       progressBar1.Maximum = 100;
 
       m_dataProcessor = new DataProcessor();
       m_dataProcessor.RegisterObserver(this);
 
-      ConfigurationManager.RefreshSection("applicationSettings");
+      if (!Settings.Default.EnableTestMode)
+        return;
 
-      if (!Settings.Default.EnableSampleDataWriter)
-        btnSampleData.Hide();
+      txtSingleFile.Text = Path.Combine(Constants.Paths.CacheDirectory, Constants.SampleMembershipDataFileName);
+      txtOutputFolder.Text = GetDownloadsPath();
+
+      Random rand = new Random(DateTime.Now.Millisecond);
+
+      m_dataProcessor.WriteSampleMemberships(rand.Next(50, 400));
+      m_dataProcessor.WriteSampleOrders(rand.Next(50, 400));
     }
 
     [DllImport("shell32.dll", CharSet = CharSet.Auto)]
@@ -122,7 +126,7 @@ namespace MMVIC
       Thread t = new Thread(() =>
       {
         string outputFileName = string.Format("{0}\\{1}.xlsx", txtOutputFolder.Text, Path.GetFileNameWithoutExtension(txtSingleFile.Text));
-        m_dataProcessor.MakeOrdersXls(txtSingleFile.Text, outputFileName);
+        m_dataProcessor.ConvertToXls(txtSingleFile.Text, outputFileName);
       });
       t.Start();
     }
@@ -154,24 +158,14 @@ namespace MMVIC
 
     #endregion
 
-    /// <summary>
-    ///   Writes sample orders
-    /// </summary>
-    private void btnSampleData_Click(object sender, EventArgs e)
-    {
-      SetProgress(0);
-      m_dataProcessor.WriteSampleOrders(120);
-      SetProgress(50);
-      m_dataProcessor.WriteSampleMemberships(100);
-      SetProgress(100);
-    }
-
     private void btnMemberDirectory_Click(object sender, EventArgs e)
     {
       SetProgress(0);
-      string filename = string.IsNullOrEmpty(txtSingleFile.Text) ? "member-directory" : txtSingleFile.Text;
-      string outputFilePath = string.Format("{0}\\{1}.pdf", txtOutputFolder.Text, Path.GetFileNameWithoutExtension(filename));
-      m_dataProcessor.MakeMembershipDirectory(new Membership[0], outputFilePath);
+      Membership[] members = Membership.ProcessFile(Path.GetFullPath(txtSingleFile.Text));
+      SetProgress(50);
+
+      string outputFilePath = string.Format("{0}\\{1}.pdf", txtOutputFolder.Text, Path.GetFileNameWithoutExtension(txtSingleFile.Text));
+      m_dataProcessor.MakeMembershipDirectory(members, outputFilePath);
       SetProgress(100);
     }
   }

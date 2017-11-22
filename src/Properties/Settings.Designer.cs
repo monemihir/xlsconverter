@@ -26,9 +26,9 @@ namespace MMVIC.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool EnableSampleDataWriter {
+        public bool EnableTestMode {
             get {
-                return ((bool)(this["EnableSampleDataWriter"]));
+                return ((bool)(this["EnableTestMode"]));
             }
         }
     }

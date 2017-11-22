@@ -16,9 +16,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using WebExtras.Core;
+using WebExtras.Html;
 
 namespace MMVIC.Models
 {
@@ -46,7 +49,7 @@ namespace MMVIC.Models
     public string OrderStatus { get; set; }
 
     /// <summary>
-    /// Constructor
+    ///   Constructor
     /// </summary>
     public Membership()
     {
@@ -62,10 +65,12 @@ namespace MMVIC.Models
     {
       string[] lines = File.ReadAllLines(membershipPsvFilePath);
 
-      PropertyInfo[] properties = typeof(Order).GetProperties();
+      PropertyInfo[] properties = typeof(Membership).GetProperties();
       string[] firstLineBuff = lines[0].Split('|');
 
       List<Membership> orders = new List<Membership>();
+
+      Dictionary<Type, TypeConverter> converterLookup = new Dictionary<Type, TypeConverter>();
 
       lines.Skip(1).ToList().ForEach(f =>
       {
@@ -73,17 +78,24 @@ namespace MMVIC.Models
         string[] buff = f.Split('|');
         for (int i = 0; i < buff.Length; i++)
         {
-          PropertyInfo prop = properties.First(p => p.Name == firstLineBuff[i]);
+          PropertyInfo prop = properties.FirstOrDefault(p => p.Name == firstLineBuff[i]);
+          if (prop == null)
+            continue;
+
+          if (!converterLookup.ContainsKey(prop.PropertyType))
+            converterLookup[prop.PropertyType] = TypeDescriptor.GetConverter(prop.PropertyType);
+
+          TypeConverter converter = converterLookup[prop.PropertyType];
 
           if (prop.PropertyType.IsArray)
           {
-            var data = buff[i].Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ChangeType(x, prop.PropertyType.GetElementType())).ToArray();
+            string[] data = buff[i].Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
 
             prop.SetValue(order, data);
           }
           else
           {
-            prop.SetValue(order, Convert.ChangeType(buff[i], prop.PropertyType));
+            prop.SetValue(order, converter.ConvertFrom(buff[i]));
           }
         }
         orders.Add(order);
@@ -119,6 +131,57 @@ namespace MMVIC.Models
       };
 
       return string.Join("|", data);
+    }
+
+    /// <summary>
+    ///   Sanitize name - removes 'lastname', 'firstname', 'and', '&' from given name
+    /// </summary>
+    /// <param name="name">Name to sanitize</param>
+    /// <returns>Sanitized name</returns>
+    private string SanitizeName(string name)
+    {
+      string[] lookup = {LastName, FirstName, "and", "&"};
+
+      Array.ForEach(lookup, str => { name = name.Replace(str, string.Empty).Trim(); });
+
+      return name.ToTitleCase();
+    }
+
+    /// <summary>
+    ///   Convert current membership to it's HTML equivalent with appropriate layout
+    /// </summary>
+    public HtmlDiv ToHtmlComponent()
+    {
+      HtmlDiv br = new HtmlDiv("<br/>");
+
+      HtmlDiv div = new HtmlDiv();
+
+      HtmlDiv name = new HtmlDiv(LastName.ToUpperInvariant() + " " + FirstName.ToTitleCase());
+      if (!string.IsNullOrWhiteSpace(SpouseName))
+        name.InnerHtml += " & " + SanitizeName(SpouseName);
+      name.CssClasses.Add("strong");
+      div.AppendTags.Add(name);
+
+      if (Children.Any())
+      {
+        HtmlDiv children = new HtmlDiv(string.Join(", ", Children.Select(c => string.Join(", ", SanitizeName(c).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries)))));
+        children.CssClasses.Add("strong");
+        div.AppendTags.Add(children);
+      }
+      else
+        div.AppendTags.Add(br);
+
+      div.AppendTags.Add(br);
+
+      HtmlDiv address = new HtmlDiv(Address + "<br>" + Suburb + ". <br>" + State.ToUpperInvariant() + " - " + PostCode);
+      div.AppendTags.Add(address);
+
+      div.AppendTags.Add(br);
+
+      HtmlDiv phone = new HtmlDiv("Tel: " + TelNo + "<br>" + "Mobile: " + MobileNo);
+      div.AppendTags.Add(phone);
+
+      return div;
     }
   }
 }

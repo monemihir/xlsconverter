@@ -31,9 +31,14 @@ namespace MMVIC.Models
     public static readonly string DateTimeIsoFormat = "yyyy-MM-dd HH:mm:ss";
 
     /// <summary>
-    /// Config key used to store boolean of whether sample data writing should be enabled or not
+    /// Sample memberships data file name
     /// </summary>
-    public static readonly string EnableSampleDataWriterKey = "EnableSampleDataWriter";
+    public static readonly string SampleMembershipDataFileName = "sample-members.psv";
+
+    /// <summary>
+    /// Sample orders data file name
+    /// </summary>
+    public static readonly string SampleOrdersDataFileName = "sample-orders.psv";
 
     /// <summary>
     /// Constant paths
@@ -47,7 +52,7 @@ namespace MMVIC.Models
       public static readonly string MemberDirectoryContentTemplatePath = Path.Combine(MemberDirectoryTemplatesPath, "content.html");
       public static readonly string MemberDirectoryHeaderTemplatePath = Path.Combine(MemberDirectoryTemplatesPath, "header.html");
       public static readonly string MemberDirectoryFooterTemplatePath = Path.Combine(MemberDirectoryTemplatesPath, "footer.html");
-      public static readonly string MemberDirectoryStylesCssPath = Path.Combine(MemberDirectoryTemplatesPath, "style.min.css");
+      //public static readonly string MemberDirectoryStylesCssPath = Path.Combine(MemberDirectoryTemplatesPath, "style.min.css");
 
       public static readonly string LibDirectory = Path.Combine(ApplicationPath, "lib");
 

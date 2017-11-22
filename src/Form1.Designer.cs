@@ -42,7 +42,6 @@
       this.progressBar1 = new System.Windows.Forms.ProgressBar();
       this.btnMemberDirectory = new System.Windows.Forms.Button();
       this.txtProgress = new System.Windows.Forms.Label();
-      this.btnSampleData = new System.Windows.Forms.Button();
       this.grpConvertFile.SuspendLayout();
       this.grpOutputFolder.SuspendLayout();
       this.SuspendLayout();
@@ -152,22 +151,11 @@
       this.txtProgress.TabIndex = 7;
       this.txtProgress.Text = "0%";
       // 
-      // btnSampleData
-      // 
-      this.btnSampleData.Location = new System.Drawing.Point(375, 194);
-      this.btnSampleData.Name = "btnSampleData";
-      this.btnSampleData.Size = new System.Drawing.Size(175, 44);
-      this.btnSampleData.TabIndex = 8;
-      this.btnSampleData.Text = "Write sample data";
-      this.btnSampleData.UseVisualStyleBackColor = true;
-      this.btnSampleData.Click += new System.EventHandler(this.btnSampleData_Click);
-      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(573, 293);
-      this.Controls.Add(this.btnSampleData);
       this.Controls.Add(this.txtProgress);
       this.Controls.Add(this.btnMemberDirectory);
       this.Controls.Add(this.progressBar1);
@@ -202,7 +190,6 @@
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Button btnMemberDirectory;
     private System.Windows.Forms.Label txtProgress;
-    private System.Windows.Forms.Button btnSampleData;
   }
 }
 

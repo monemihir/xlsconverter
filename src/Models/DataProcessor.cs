@@ -40,9 +40,9 @@ namespace MMVIC.Models
     /// <summary>
     ///   Makes the orders XLS file from given orders
     /// </summary>
-    /// <param name="ordersPsvFilePath">Orders PSV file</param>
+    /// <param name="inputPsvFilePath">PSV file path</param>
     /// <param name="outputFilePath">XLS output file path</param>
-    public void MakeOrdersXls(string ordersPsvFilePath, string outputFilePath)
+    public void ConvertToXls(string inputPsvFilePath, string outputFilePath)
     {
       Random rand = new Random(DateTime.Now.Millisecond);
       try
@@ -50,7 +50,7 @@ namespace MMVIC.Models
         int progress = 5;
         NotifyAll(progress);
 
-        string[] lines = File.ReadAllLines(ordersPsvFilePath);
+        string[] lines = File.ReadAllLines(inputPsvFilePath);
         progress = 10;
         NotifyAll(progress);
 
@@ -123,44 +123,22 @@ namespace MMVIC.Models
       string htmlFile = Path.Combine(Constants.Paths.CacheDirectory, "member-directory-content.html");
       string footerHtmlFile = Path.Combine(Constants.Paths.CacheDirectory, "member-directory-footer.html");
 
+      // copy all CSS files to cache
+      new DirectoryInfo(Constants.Paths.MemberDirectoryTemplatesPath)
+        .GetFiles("*.css")
+        .ToList()
+        .ForEach(f => File.Copy(f.FullName, Path.Combine(baseDir, f.Name), true));
+
       HtmlDocument doc = new HtmlDocument();
       doc.Load(Constants.Paths.MemberDirectoryContentTemplatePath);
 
-      // create style node
-      HtmlNode style = doc.CreateElement("style");
-      style.InnerHtml = File.ReadAllText(Constants.Paths.MemberDirectoryStylesCssPath);
-
-      HtmlNode headNode = doc.DocumentNode.SelectSingleNode("//head");
-      headNode.AppendChild(style);
-
-      // create member data pages
-      IHtmlComponent pages = members.ToHtmlPages();
-
       // update the content
       HtmlNode contentNode = doc.DocumentNode.SelectSingleNode("//div[@id='content']");
-      contentNode.InnerHtml = pages.ToHtml();
+      contentNode.InnerHtml = members.ToHtmlTables();
 
       doc.Save(htmlFile);
 
-
-      //XElement headElement = doc.Elements().FirstOrDefault(e => e.Name.LocalName.Equals("head", StringComparison.OrdinalIgnoreCase));
-
-      //if (headElement == null)
-      //{
-      //  headElement = new XElement("head");
-      //  doc.Add(headElement);
-      //}
-
-      //XElement styleElement = new XElement("style");
-      //string stylesContent = File.ReadAllText(Constants.Paths.MemberDirectoryStylesCssPath);
-      //styleElement.Value = stylesContent;
-
-      //headElement.Add(styleElement);
-
-      // write the content
-      //File.WriteAllText(htmlFile, File.ReadAllText(Constants.Paths.MemberDirectoryContentTemplatePath));
-
-      string pdfExeArgs = string.Format("\"{0}\" \"{1}\"", htmlFile, outputFilePath);
+      string pdfExeArgs = string.Format("--disable-smart-shrinking \"{0}\" \"{1}\"", htmlFile, outputFilePath);
 
       // cleanup
       Action cleanUpFiles = () =>
@@ -252,7 +230,7 @@ namespace MMVIC.Models
 
       IEnumerable<string> lines = new[] {header}.Concat(orders.Select(f => f.ToPsvRow()));
 
-      File.WriteAllLines(Path.Combine(Constants.Paths.CacheDirectory, "sample-orders.psv"), lines);
+      File.WriteAllLines(Path.Combine(Constants.Paths.CacheDirectory, Constants.SampleOrdersDataFileName), lines);
     }
 
     /// <summary>
@@ -292,7 +270,7 @@ namespace MMVIC.Models
 
       IEnumerable<string> lines = new[] {header}.Concat(orders.Select(f => f.ToPsvRow()));
 
-      File.WriteAllLines(Path.Combine(Constants.Paths.CacheDirectory, "sample-members.psv"), lines);
+      File.WriteAllLines(Path.Combine(Constants.Paths.CacheDirectory, Constants.SampleMembershipDataFileName), lines);
     }
 
     #region Implementation of IObservable
