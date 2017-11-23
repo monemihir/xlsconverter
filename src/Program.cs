@@ -16,6 +16,8 @@
 
 using System;
 using System.Windows.Forms;
+using WebExtras.Core;
+using WebExtras.FontAwesome;
 
 namespace MMVIC
 {
@@ -27,6 +29,8 @@ namespace MMVIC
     [STAThread]
     private static void Main()
     {
+      WebExtrasSettings.FontAwesomeVersion = EFontAwesomeVersion.V4;
+
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
       Application.Run(new MainForm());

@@ -50,8 +50,8 @@ namespace MMVIC.Models
       {
         if (i > 0 && i % entriesPerPage == 0)
         {
-          html += pageBreak.ToHtml();
           html += builder.ToString(TagRenderMode.Normal);
+          html += pageBreak.ToHtml();
 
           builder = new TagBuilder("table") {Attributes = {["class"] = "table table-bordered"}};
         }

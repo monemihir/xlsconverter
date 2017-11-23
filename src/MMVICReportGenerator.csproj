@@ -157,7 +157,12 @@
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
-    <None Include="data\member-directory\style.less" />
+    <None Include="content\fonts\fontawesome-webfont.eot" />
+    <None Include="content\fonts\fontawesome-webfont.ttf" />
+    <None Include="content\fonts\fontawesome-webfont.woff" />
+    <None Include="content\fonts\fontawesome-webfont.woff2" />
+    <None Include="content\fonts\FontAwesome.otf" />
+    <None Include="content\css\style.less" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -170,14 +175,16 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="data\member-directory\bootstrap.min.css" />
-    <Content Include="data\member-directory\content.html" />
-    <Content Include="data\member-directory\footer.html" />
-    <Content Include="data\member-directory\header.html" />
-    <Content Include="data\member-directory\style.css">
+    <Content Include="content\css\font-awesome.min.css" />
+    <Content Include="content\fonts\fontawesome-webfont.svg" />
+    <Content Include="content\css\bootstrap.min.css" />
+    <Content Include="content\templates\content.html" />
+    <Content Include="content\templates\footer.html" />
+    <Content Include="content\templates\header.html" />
+    <Content Include="content\css\style.css">
       <DependentUpon>style.less</DependentUpon>
     </Content>
-    <Content Include="data\member-directory\style.min.css">
+    <Content Include="content\css\style.min.css">
       <DependentUpon>style.css</DependentUpon>
     </Content>
     <Content Include="lib\wkhtmltopdf.exe" />

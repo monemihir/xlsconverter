@@ -22,6 +22,7 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using WebExtras.Core;
+using WebExtras.FontAwesome;
 using WebExtras.Html;
 
 namespace MMVIC.Models
@@ -175,11 +176,24 @@ namespace MMVIC.Models
       HtmlDiv br = new HtmlDiv("<br/>");
 
       HtmlDiv div = new HtmlDiv();
-
+      
       HtmlDiv name = new HtmlDiv(LastName.ToUpperInvariant() + " " + FirstName.ToTitleCase());
       if (!string.IsNullOrWhiteSpace(SpouseName))
         name.InnerHtml += " & " + SanitizeName(SpouseName);
       name.CssClasses.Add("strong");
+
+      string membershipType = "";
+      if (ProgramName.ContainsIgnoreCase("individual"))
+        membershipType = EFontAwesomeIcon.Users.GetStringValue();
+      else if (ProgramName.ContainsIgnoreCase("family"))
+        membershipType = EFontAwesomeIcon.Users.GetStringValue();
+      else if (ProgramName.ContainsIgnoreCase("student"))
+        membershipType = EFontAwesomeIcon.University.GetStringValue();
+
+      HtmlComponent icon = new HtmlComponent(EHtmlTag.I);
+      icon.CssClasses.Add("pull-right fa " + membershipType);
+
+      div.AppendTags.Add(icon);
       div.AppendTags.Add(name);
 
       if (Children.Any())

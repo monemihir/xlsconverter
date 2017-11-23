@@ -35,6 +35,20 @@ namespace MMVIC.Models
   {
     private readonly List<IObserver> m_observers = new List<IObserver>();
 
+    private void UpdateCssPathsToSameFolder(HtmlNodeCollection linkNodes)
+    {
+      foreach (HtmlNode linkNode in linkNodes)
+      {
+        if (linkNode.Name != "link")
+          throw new ArgumentException("Invalid node given. Expected the <link> node but got <" + linkNode.Name + ">");
+
+        string currentHref = linkNode.Attributes["href"].Value;
+        string newHref = Path.GetFileName(currentHref);
+
+        linkNode.Attributes["href"].Value = newHref;
+      }
+    }
+
     /// <summary>
     ///   Makes the orders XLS file from given orders
     /// </summary>
@@ -144,10 +158,23 @@ namespace MMVIC.Models
         string footerHtmlFile = Path.Combine(Constants.Paths.CacheDirectory, "member-directory-footer.html");
 
         // copy all CSS files to cache
-        new DirectoryInfo(Constants.Paths.MemberDirectoryTemplatesPath)
-          .GetFiles("*.css")
+        new DirectoryInfo(Constants.Paths.CssDirectory)
+          .GetFiles("*.min.css")
           .ToList()
           .ForEach(f => File.Copy(f.FullName, Path.Combine(baseDir, f.Name), true));
+
+        // copy font files
+        new DirectoryInfo(Constants.Paths.FontsDirectory)
+          .GetFiles("*.*")
+          .ToList()
+          .ForEach(f => File.Copy(f.FullName, Path.Combine(baseDir, f.Name), true));
+
+        // update font awesome css file to point to font files in same folder
+        string fontAwesomeFileName = Constants.Paths.CacheDirectory + "\\font-awesome.min.css";
+        string text = File.ReadAllText(fontAwesomeFileName);
+        text = text.Replace("../fonts/", string.Empty);
+        File.WriteAllText(fontAwesomeFileName, text);
+
         fnNotifyProgress(20);
 
         HtmlDocument doc = new HtmlDocument();
@@ -158,6 +185,7 @@ namespace MMVIC.Models
           doc.Load(Constants.Paths.MemberDirectoryHeaderTemplatePath);
           HtmlNode headerNode = doc.DocumentNode.SelectSingleNode("//header");
           headerNode.InnerHtml = mdConf.HeaderText;
+          UpdateCssPathsToSameFolder(doc.DocumentNode.SelectNodes("//link"));
           doc.Save(headerHtmlFile);
           pdfExeArgs.Add("--header-line");
           pdfExeArgs.Add("--header-html \"" + headerHtmlFile + "\"");
@@ -168,6 +196,7 @@ namespace MMVIC.Models
         {
           // create page footer
           doc.Load(Constants.Paths.MemberDirectoryFooterTemplatePath);
+          UpdateCssPathsToSameFolder(doc.DocumentNode.SelectNodes("//link"));
           doc.Save(footerHtmlFile);
           pdfExeArgs.Add("--footer-line");
           pdfExeArgs.Add("--footer-html \"" + footerHtmlFile + "\"");
@@ -177,6 +206,7 @@ namespace MMVIC.Models
         // create page content
         doc = new HtmlDocument();
         doc.Load(Constants.Paths.MemberDirectoryContentTemplatePath);
+        UpdateCssPathsToSameFolder(doc.DocumentNode.SelectNodes("//link"));
         HtmlNode contentNode = doc.DocumentNode.SelectSingleNode("//div[@id='content']");
         contentNode.InnerHtml = members.ToHtmlTables();
         doc.Save(htmlFile);
@@ -184,8 +214,6 @@ namespace MMVIC.Models
         pdfExeArgs.Add("\"" + htmlFile + "\"");
         pdfExeArgs.Add("\"" + mdConf.OutputFilePath + "\"");
         fnNotifyProgress(40);
-
-        //string pdfExeArgs = string.Format("--disable-smart-shrinking \"{0}\" \"{1}\"", htmlFile, outputFilePath);
 
         // cleanup
         Action cleanUpFiles = () =>
@@ -236,14 +264,14 @@ namespace MMVIC.Models
           if (p.ExitCode != 0)
           {
             p.Close();
-            cleanUpFiles();
+            //cleanUpFiles();
             throw new Exception("Error converting html to pdf: " + stdErr);
           }
 
           p.Close();
         }
 
-        cleanUpFiles();
+        //cleanUpFiles();
 
         MessageBox.Show("Export succeeded!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }

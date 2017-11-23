@@ -48,11 +48,12 @@ namespace MMVIC.Models
       private static readonly string ApplicationPath = Path.GetFullPath(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath + @"\..\..\");
       public static readonly string CacheDirectory = Path.Combine(ApplicationPath, "cache");
 
-      public static readonly string MemberDirectoryTemplatesPath = Path.Combine(ApplicationPath, @"data\member-directory");
+      public static readonly string CssDirectory = Path.Combine(ApplicationPath, @"content\css");
+      public static readonly string FontsDirectory = Path.Combine(ApplicationPath, @"content\fonts");
+      public static readonly string MemberDirectoryTemplatesPath = Path.Combine(ApplicationPath, @"content\templates");
       public static readonly string MemberDirectoryContentTemplatePath = Path.Combine(MemberDirectoryTemplatesPath, "content.html");
       public static readonly string MemberDirectoryHeaderTemplatePath = Path.Combine(MemberDirectoryTemplatesPath, "header.html");
       public static readonly string MemberDirectoryFooterTemplatePath = Path.Combine(MemberDirectoryTemplatesPath, "footer.html");
-      //public static readonly string MemberDirectoryStylesCssPath = Path.Combine(MemberDirectoryTemplatesPath, "style.min.css");
 
       public static readonly string LibDirectory = Path.Combine(ApplicationPath, "lib");
 
