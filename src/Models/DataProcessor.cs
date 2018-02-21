@@ -170,10 +170,15 @@ namespace MMVIC.Models
           .ForEach(f => File.Copy(f.FullName, Path.Combine(baseDir, f.Name), true));
 
         // update font awesome css file to point to font files in same folder
-        string fontAwesomeFileName = Constants.Paths.CacheDirectory + "\\font-awesome.min.css";
-        string text = File.ReadAllText(fontAwesomeFileName);
+        string fontFile = Constants.Paths.CacheDirectory + "\\font-awesome.min.css";
+        string text = File.ReadAllText(fontFile);
         text = text.Replace("../fonts/", string.Empty);
-        File.WriteAllText(fontAwesomeFileName, text);
+        File.WriteAllText(fontFile, text);
+
+        fontFile = Constants.Paths.CacheDirectory + "\\mmvic.min.css";
+        text = File.ReadAllText(fontFile);
+        text = text.Replace("../fonts/", string.Empty);
+        File.WriteAllText(fontFile, text);
 
         fnNotifyProgress(20);
 

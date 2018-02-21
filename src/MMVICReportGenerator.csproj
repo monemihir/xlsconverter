@@ -163,6 +163,9 @@
     <None Include="content\fonts\fontawesome-webfont.woff2" />
     <None Include="content\fonts\FontAwesome.otf" />
     <None Include="content\css\style.less" />
+    <None Include="content\fonts\mmvic.eot" />
+    <None Include="content\fonts\mmvic.ttf" />
+    <None Include="content\fonts\mmvic.woff" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -176,8 +179,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="content\css\font-awesome.min.css" />
+    <None Include="content\css\mmvic.less" />
+    <Content Include="content\css\mmvic.css">
+      <DependentUpon>mmvic.less</DependentUpon>
+    </Content>
+    <Content Include="content\css\mmvic.min.css">
+      <DependentUpon>mmvic.css</DependentUpon>
+    </Content>
     <Content Include="content\fonts\fontawesome-webfont.svg" />
     <Content Include="content\css\bootstrap.min.css" />
+    <Content Include="content\fonts\mmvic.svg" />
     <Content Include="content\templates\content.html" />
     <Content Include="content\templates\footer.html" />
     <Content Include="content\templates\header.html" />

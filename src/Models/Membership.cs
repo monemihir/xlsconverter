@@ -181,19 +181,35 @@ namespace MMVIC.Models
       if (!string.IsNullOrWhiteSpace(SpouseName))
         name.InnerHtml += " & " + SanitizeName(SpouseName);
       name.CssClasses.Add("strong");
-
+      
       string membershipType = "";
+      string secondaryIconClass = "";
       if (ProgramName.ContainsIgnoreCase("individual"))
-        membershipType = EFontAwesomeIcon.Users.GetStringValue();
+      {
+        membershipType = EFontAwesomeIcon.User.GetStringValue();
+        secondaryIconClass = "icon-old-couple-2";
+      }
       else if (ProgramName.ContainsIgnoreCase("family"))
         membershipType = EFontAwesomeIcon.Users.GetStringValue();
       else if (ProgramName.ContainsIgnoreCase("student"))
         membershipType = EFontAwesomeIcon.University.GetStringValue();
 
-      HtmlComponent icon = new HtmlComponent(EHtmlTag.I);
-      icon.CssClasses.Add("pull-right fa " + membershipType);
+      HtmlComponent primaryIcon = new HtmlComponent(EHtmlTag.I);
+      primaryIcon.CssClasses.Add("pull-right fa " + membershipType);
 
-      div.AppendTags.Add(icon);
+      div.AppendTags.Add(primaryIcon);
+
+      if (!string.IsNullOrEmpty(secondaryIconClass))
+      {
+        HtmlComponent separator = new HtmlComponent(EHtmlTag.I);
+        separator.CssClasses.Add("pull-right fa fa-ellipsis-v");
+        div.AppendTags.Add(separator);
+
+        HtmlComponent secondaryIcon = new HtmlComponent(EHtmlTag.I);
+        secondaryIcon.CssClasses.Add("pull-right icon " + secondaryIconClass);
+        div.AppendTags.Add(secondaryIcon);
+      }
+
       div.AppendTags.Add(name);
 
       if (Children.Any())

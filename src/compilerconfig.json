@@ -2,5 +2,9 @@
   {
     "outputFile": "data/member-directory/style.css",
     "inputFile": "data/member-directory/style.less"
+  },
+  {
+    "outputFile": "content/css/mmvic.css",
+    "inputFile": "content/css/mmvic.less"
   }
 ]
