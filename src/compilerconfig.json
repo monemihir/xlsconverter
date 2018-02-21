@@ -6,5 +6,9 @@
   {
     "outputFile": "content/css/mmvic.css",
     "inputFile": "content/css/mmvic.less"
+  },
+  {
+    "outputFile": "content/css/style.css",
+    "inputFile": "content/css/style.less"
   }
 ]

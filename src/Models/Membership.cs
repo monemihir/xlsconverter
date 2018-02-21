@@ -178,8 +178,11 @@ namespace MMVIC.Models
       HtmlDiv div = new HtmlDiv();
       
       HtmlDiv name = new HtmlDiv(LastName.ToUpperInvariant() + " " + FirstName.ToTitleCase());
-      if (!string.IsNullOrWhiteSpace(SpouseName))
-        name.InnerHtml += " & " + SanitizeName(SpouseName);
+
+      string sanitizedSpouseName = SanitizeName(SpouseName);
+
+      if (!string.IsNullOrWhiteSpace(sanitizedSpouseName))
+        name.InnerHtml += " & " + sanitizedSpouseName;
       name.CssClasses.Add("strong");
       
       string membershipType = "";

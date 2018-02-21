@@ -1,6 +1,6 @@
 ﻿// 
 // This file is part of - MMVIC Report Generator
-// Copyright 2017 Mihir Mone
+// Copyright 2018 Mihir Mone
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -169,16 +169,18 @@ namespace MMVIC.Models
           .ToList()
           .ForEach(f => File.Copy(f.FullName, Path.Combine(baseDir, f.Name), true));
 
-        // update font awesome css file to point to font files in same folder
-        string fontFile = Constants.Paths.CacheDirectory + "\\font-awesome.min.css";
-        string text = File.ReadAllText(fontFile);
-        text = text.Replace("../fonts/", string.Empty);
-        File.WriteAllText(fontFile, text);
+        Action<string> fnFixFontFileReferences = fileName =>
+        {
+          string fontFile = Path.Combine(Constants.Paths.CacheDirectory, fileName);
+          string text = File.ReadAllText(fontFile);
+          text = text.Replace("../fonts/", string.Empty);
+          File.WriteAllText(fontFile, text);
+        };
 
-        fontFile = Constants.Paths.CacheDirectory + "\\mmvic.min.css";
-        text = File.ReadAllText(fontFile);
-        text = text.Replace("../fonts/", string.Empty);
-        File.WriteAllText(fontFile, text);
+        // update font folder references in all required css files
+        fnFixFontFileReferences("font-awesome.min.css");
+        fnFixFontFileReferences("mmvic.min.css");
+        fnFixFontFileReferences("style.min.css");
 
         fnNotifyProgress(20);
 

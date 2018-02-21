@@ -157,6 +157,7 @@
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <None Include="content\fonts\DidactGothic-Regular.ttf" />
     <None Include="content\fonts\fontawesome-webfont.eot" />
     <None Include="content\fonts\fontawesome-webfont.ttf" />
     <None Include="content\fonts\fontawesome-webfont.woff" />
@@ -166,6 +167,9 @@
     <None Include="content\fonts\mmvic.eot" />
     <None Include="content\fonts\mmvic.ttf" />
     <None Include="content\fonts\mmvic.woff" />
+    <None Include="content\fonts\PlayfairDisplay-Bold.otf" />
+    <None Include="content\fonts\PlayfairDisplay-Regular.otf" />
+    <None Include="content\fonts\Soria-font.ttf" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
