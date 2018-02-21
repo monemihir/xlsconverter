@@ -135,13 +135,19 @@ namespace MMVIC
 
     private void btnConvertToXls_Click(object sender, EventArgs e)
     {
-      btnConvertToXls.Enabled = false;
-
       if (!File.Exists(xlsConvertInputFile.Text))
       {
         MessageBox.Show("Input file not found :(", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
+
+      if (string.IsNullOrEmpty(xlsConvertOutputFolder.Text))
+      {
+        MessageBox.Show("Please select an output folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+      }
+
+      btnConvertToXls.Enabled = false;
 
       Thread t = new Thread(() =>
       {
@@ -197,6 +203,12 @@ namespace MMVIC
       if (!File.Exists(mdInputFile.Text))
       {
         MessageBox.Show("Input file not found :(", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+      }
+
+      if (string.IsNullOrEmpty(mdOutputFolder.Text))
+      {
+        MessageBox.Show("Please select an output folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
 

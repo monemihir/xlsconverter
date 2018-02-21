@@ -2,10 +2,14 @@
 ;
 ; Installer for MMVIC Report Generator
 ;
+
+#define AppVer GetFileVersion('..\src\bin\MMVICReportGenerator.exe')
+
 [Setup]
 AppName=MMVIC Report Generator
 AppCopyright=Mihir Mone
-AppVersion=1.1
+AppVersion={#AppVer}
+OutputBaseFilename=mmvic-report-generator-{#AppVer}
 DefaultDirName={pf32}\MMVIC Report Generator
 DefaultGroupName=MMVIC
 UninstallFilesDir={app}
