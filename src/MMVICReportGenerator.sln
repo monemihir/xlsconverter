@@ -19,4 +19,17 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(AutomaticVersions) = postSolution
+		PrimaryVersionType = AssemblyVersionAttribute
+		UpdateAssemblyVersion = True
+		UpdateAssemblyFileVersion = True
+		UpdateAssemblyInfoVersion = True
+		ShouldCreateLogs = True
+		AdvancedSettingsExpanded = True
+		AssemblyVersionSettings = None.None.Increment.DeltaDayStamp
+		AssemblyFileVersionSettings = None.None.Increment.DeltaDayStamp
+		AssemblyInfoVersionSettings = None.None.Increment.DeltaDayStamp
+		UpdatePackageVersion = False
+		AssemblyInfoVersionType = SettingsVersion
+	EndGlobalSection
 EndGlobal

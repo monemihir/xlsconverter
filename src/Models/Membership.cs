@@ -1,6 +1,6 @@
 ﻿// 
 // This file is part of - MMVIC Report Generator
-// Copyright 2017 Mihir Mone
+// Copyright 2018 Mihir Mone
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
 using WebExtras.Core;
 using WebExtras.FontAwesome;
 using WebExtras.Html;
@@ -60,7 +59,7 @@ namespace MMVIC.Models
 
     public override int GetHashCode()
     {
-      List<string> current = new List<string>(Children) { LastName, FirstName, SpouseName };
+      List<string> current = new List<string>(Children) {LastName, FirstName, SpouseName};
 
       return string.Join("", current).GetHashCode();
     }
@@ -176,7 +175,7 @@ namespace MMVIC.Models
       HtmlDiv br = new HtmlDiv("<br/>");
 
       HtmlDiv div = new HtmlDiv();
-      
+
       HtmlDiv name = new HtmlDiv(LastName.ToUpperInvariant() + " " + FirstName.ToTitleCase());
 
       string sanitizedSpouseName = SanitizeName(SpouseName);
@@ -184,7 +183,7 @@ namespace MMVIC.Models
       if (!string.IsNullOrWhiteSpace(sanitizedSpouseName))
         name.InnerHtml += " & " + sanitizedSpouseName;
       name.CssClasses.Add("strong");
-      
+
       string membershipType = "";
       string secondaryIconClass = "";
       if (ProgramName.ContainsIgnoreCase("individual"))
@@ -257,7 +256,10 @@ namespace MMVIC.Models
     /// <summary>Returns a hash code for the specified object.</summary>
     /// <returns>A hash code for the specified object.</returns>
     /// <param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
-    /// <exception cref="T:System.ArgumentNullException">The type of <paramref name="obj" /> is a reference type and <paramref name="obj" /> is null.</exception>
+    /// <exception cref="T:System.ArgumentNullException">
+    ///   The type of <paramref name="obj" /> is a reference type and
+    ///   <paramref name="obj" /> is null.
+    /// </exception>
     public int GetHashCode(Membership obj)
     {
       return obj.GetHashCode();
