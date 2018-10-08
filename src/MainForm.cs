@@ -55,6 +55,8 @@ namespace MMVIC
       m_dataProcessor = new DataProcessor();
       m_dataProcessor.RegisterObserver(this);
 
+      mdReportHeader.Text = "MMVIC Members Directory " + DateTime.Now.Year;
+
       if (!Settings.Default.EnableTestMode)
         return;
 
@@ -65,8 +67,6 @@ namespace MMVIC
       // set defaults for member directory tab
       mdInputFile.Text = Path.Combine(Constants.Paths.CacheDirectory, Constants.SampleMembershipDataFileName);
       mdOutputFolder.Text = GetDownloadsPath();
-      mdReportHeader.Text = "MMVIC Members Directory " + DateTime.Now.Year;
-
 
       Random rand = new Random(DateTime.Now.Millisecond);
 
@@ -119,6 +119,12 @@ namespace MMVIC
       selectFileDialog.ShowDialog();
 
       xlsConvertInputFile.Text = selectFileDialog.FileName;
+
+      if (!string.IsNullOrEmpty(xlsConvertOutputFolder.Text))
+        return;
+
+      string directory = Path.GetDirectoryName(xlsConvertInputFile.Text);
+      xlsConvertOutputFolder.Text = directory;
     }
 
     private void btnSelectXLSConvertOutputFolder_Click(object sender, EventArgs e)
@@ -184,6 +190,12 @@ namespace MMVIC
       selectFileDialog.ShowDialog();
 
       mdInputFile.Text = selectFileDialog.FileName;
+
+      if (!string.IsNullOrEmpty(mdOutputFolder.Text))
+        return;
+
+      string directory = Path.GetDirectoryName(mdInputFile.Text);
+      mdOutputFolder.Text = directory;
     }
 
     private void btnSelectMDOutputFolder_Click(object sender, EventArgs e)

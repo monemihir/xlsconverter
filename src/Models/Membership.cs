@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using WebExtras.Core;
 using WebExtras.FontAwesome;
 using WebExtras.Html;
@@ -44,6 +45,7 @@ namespace MMVIC.Models
     public int PostCode { get; set; }
     public string TelNo { get; set; }
     public string MobileNo { get; set; }
+    public string SpouseMobileNo { get; set; }
     public string Email1 { get; set; }
     public string Email2 { get; set; }
     public DateTime PaymentDate { get; set; }
@@ -59,7 +61,7 @@ namespace MMVIC.Models
 
     public override int GetHashCode()
     {
-      List<string> current = new List<string>(Children) {LastName, FirstName, SpouseName};
+      List<string> current = new List<string>(Children) { LastName, FirstName, SpouseName };
 
       return string.Join("", current).GetHashCode();
     }
@@ -70,8 +72,8 @@ namespace MMVIC.Models
       if (casted == null)
         return false;
 
-      List<string> left = new List<string>(Children) {LastName, FirstName, SpouseName};
-      List<string> right = new List<string>(casted.Children) {casted.LastName, casted.FirstName, casted.SpouseName};
+      List<string> left = new List<string>(Children) { LastName, FirstName, SpouseName };
+      List<string> right = new List<string>(casted.Children) { casted.LastName, casted.FirstName, casted.SpouseName };
 
       return string.Join("", left) == string.Join("", right);
     }
@@ -109,7 +111,7 @@ namespace MMVIC.Models
 
           if (prop.PropertyType.IsArray)
           {
-            string[] data = buff[i].Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+            string[] data = buff[i].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             prop.SetValue(order, data);
           }
@@ -144,6 +146,7 @@ namespace MMVIC.Models
         PostCode.ToString(),
         TelNo,
         MobileNo,
+        SpouseMobileNo,
         Email1,
         Email2,
         PaymentDate.ToString(Constants.DateTimeIsoFormat),
@@ -160,9 +163,17 @@ namespace MMVIC.Models
     /// <returns>Sanitized name</returns>
     private string SanitizeName(string name)
     {
-      string[] lookup = {LastName, FirstName, "and", "&"};
+      string[] lookup = { LastName, FirstName, "&", "/", "\\" };
 
       Array.ForEach(lookup, str => { name = name.Replace(str, string.Empty).Trim(); });
+
+      name = Regex.Replace(name, @"[\d-]", string.Empty);
+
+      if (name.Equals("na", StringComparison.OrdinalIgnoreCase))
+        name = string.Empty;
+
+      if (name.Equals("and", StringComparison.OrdinalIgnoreCase))
+        name = string.Empty;
 
       return name.ToTitleCase();
     }
@@ -216,9 +227,14 @@ namespace MMVIC.Models
 
       if (Children.Any())
       {
-        HtmlDiv children = new HtmlDiv(string.Join(", ", Children.Select(c => string.Join(", ", SanitizeName(c).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries)))));
+        string childrenNames = string.Join(", ", Children.Select(c => string.Join(", ", SanitizeName(c).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))));
+
+        HtmlDiv children = new HtmlDiv(childrenNames);
         children.CssClasses.Add("strong");
         div.AppendTags.Add(children);
+
+        if (string.IsNullOrEmpty(childrenNames))
+          div.AppendTags.Add(br);
       }
       else
         div.AppendTags.Add(br);
@@ -230,7 +246,22 @@ namespace MMVIC.Models
 
       div.AppendTags.Add(br);
 
-      HtmlDiv phone = new HtmlDiv("Tel: " + TelNo + "<br>" + "Mobile: " + MobileNo);
+      if (TelNo == MobileNo || TelNo == SpouseMobileNo)
+        TelNo = string.Empty;
+
+      if (!MobileNo.StartsWith("+61") && !MobileNo.StartsWith("0"))
+        MobileNo = "0" + MobileNo;
+
+      string numbers = "Tel: " + TelNo + "<br>" + "Mobile: " + MobileNo;
+      if (!string.IsNullOrEmpty(SpouseMobileNo))
+      {
+        if (!SpouseMobileNo.StartsWith("+61") && !SpouseMobileNo.StartsWith("0"))
+          SpouseMobileNo = "0" + SpouseMobileNo;
+        if (MobileNo != SpouseMobileNo)
+          numbers += ", " + SpouseMobileNo;
+      }
+
+      HtmlDiv phone = new HtmlDiv(numbers);
       div.AppendTags.Add(phone);
 
       return div;
