@@ -197,15 +197,18 @@ namespace MMVIC.Models
 
       string membershipType = "";
       string secondaryIconClass = "";
-      if (ProgramName.ContainsIgnoreCase("individual"))
+      if (!string.IsNullOrWhiteSpace(ProgramName))
       {
-        membershipType = EFontAwesomeIcon.User.GetStringValue();
-        secondaryIconClass = "icon-old-couple-2";
+        if (ProgramName.ContainsIgnoreCase("individual"))
+        {
+          membershipType = EFontAwesomeIcon.User.GetStringValue();
+          secondaryIconClass = "icon-old-couple-2";
+        }
+        else if (ProgramName.ContainsIgnoreCase("family"))
+          membershipType = EFontAwesomeIcon.Users.GetStringValue();
+        else if (ProgramName.ContainsIgnoreCase("student"))
+          membershipType = EFontAwesomeIcon.University.GetStringValue();
       }
-      else if (ProgramName.ContainsIgnoreCase("family"))
-        membershipType = EFontAwesomeIcon.Users.GetStringValue();
-      else if (ProgramName.ContainsIgnoreCase("student"))
-        membershipType = EFontAwesomeIcon.University.GetStringValue();
 
       HtmlComponent primaryIcon = new HtmlComponent(EHtmlTag.I);
       primaryIcon.CssClasses.Add("pull-right fa " + membershipType);
