@@ -120,7 +120,7 @@ namespace MMVIC
 
       xlsConvertInputFile.Text = selectFileDialog.FileName;
 
-      if (!string.IsNullOrEmpty(xlsConvertOutputFolder.Text))
+      if (!string.IsNullOrEmpty(xlsConvertOutputFolder.Text) || string.IsNullOrEmpty(xlsConvertInputFile.Text))
         return;
 
       string directory = Path.GetDirectoryName(xlsConvertInputFile.Text);
@@ -191,7 +191,7 @@ namespace MMVIC
 
       mdInputFile.Text = selectFileDialog.FileName;
 
-      if (!string.IsNullOrEmpty(mdOutputFolder.Text))
+      if (!string.IsNullOrEmpty(mdOutputFolder.Text) || string.IsNullOrEmpty(mdInputFile.Text))
         return;
 
       string directory = Path.GetDirectoryName(mdInputFile.Text);

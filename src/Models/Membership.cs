@@ -172,10 +172,15 @@ namespace MMVIC.Models
       if (name.Equals("na", StringComparison.OrdinalIgnoreCase))
         name = string.Empty;
 
-      if (name.Equals("and", StringComparison.OrdinalIgnoreCase))
-        name = string.Empty;
+      string[] split = name.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-      return name.ToTitleCase();
+      for (int i = 0; i < split.Length; i++)
+        if (split[i].Equals("and", StringComparison.OrdinalIgnoreCase))
+          split[i] = string.Empty;
+
+      name = string.Join(" ", split);
+
+      return name.ToTitleCase(true);
     }
 
     /// <summary>
