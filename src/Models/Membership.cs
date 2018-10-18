@@ -117,7 +117,8 @@ namespace MMVIC.Models
           }
           else
           {
-            prop.SetValue(order, converter.ConvertFrom(buff[i]));
+            if (converter.IsValid(buff[i]))
+              prop.SetValue(order, converter.ConvertFromInvariantString(buff[i]));
           }
         }
         orders.Add(order);
